@@ -3,7 +3,6 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.13.1
 
-using JK_Assistant.Bots;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -31,8 +30,20 @@ namespace JK_Assistant
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            // Create the memory storage we'll be using for User and Conversation state.
+            services.AddSingleton<IStorage, MemoryStorage>();
+
+            // Create the User state.
+            services.AddSingleton<UserState>();
+
+            // Create the Conversation state.
+            services.AddSingleton<ConversationState>();
+
+            // Create instance of MainDialog.
+            services.AddSingleton<MainDialog>();
+
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, EchoBot>();
+            services.AddTransient<IBot, JKAssistantBot<MainDialog>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

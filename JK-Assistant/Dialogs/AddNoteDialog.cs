@@ -77,9 +77,10 @@ namespace JK_Assistant
         {
             stepContext.Values[_bodyFieldName] = (string)stepContext.Result;
 
+            var NoteCardAttachment = MessageFactory.Attachment(Functions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
+                (string)stepContext.Values[_bodyFieldName]));
 
-
-
+            await stepContext.Context.SendActivityAsync(NoteCardAttachment);
 
             return await stepContext.PromptAsync(nameof(ConfirmPrompt),
                 new PromptOptions

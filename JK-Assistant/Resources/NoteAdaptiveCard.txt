@@ -24,7 +24,7 @@
                     "items": [
                         {
                             "type": "Image",
-                            "url": "https://img-premium.flaticon.com/png/512/686/686112.png?token=exp=1628597627~hmac=e12c3ebdb11e95330205c58a38074bc8",
+                            "url": "https://adaptivecards.io/content/cats/1.png",
                             "size": "Small"
                         }
                     ]

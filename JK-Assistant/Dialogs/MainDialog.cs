@@ -28,7 +28,7 @@ namespace JK_Assistant
             UserState = userState;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-
+            AddDialog(new AddNoteDialog(UserState));
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
             {

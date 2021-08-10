@@ -16,8 +16,11 @@ namespace JK_Assistant
         private const string _noteTitlePrompt = "Please enter your note title";
         private const string _noteTitleInvalid = "Note title must have between 3 and 20 characters. Please enter correct value";
         private const string _noteBodyPrompt = "Please enter your note";
+        private const string _shouldSavePrompt = "Would you like to save this note?";
         private const string _titlePromptName = "TitlePrompt";
         private const string _bodyPromptName = "BodyPrompt";
+        private const string _titleFieldName = "TitleValue";
+        private const string _bodyFieldName = "BodyValue";
 
         protected readonly UserState UserState;
 
@@ -28,6 +31,7 @@ namespace JK_Assistant
 
             AddDialog(new TextPrompt(_titlePromptName, TitlePromptValidatorAsync));
             AddDialog(new TextPrompt(_bodyPromptName));
+            AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
 
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
@@ -57,6 +61,8 @@ namespace JK_Assistant
         /// </summary>
         private async Task<DialogTurnResult> GetNoteBodyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            stepContext.Values[_titleFieldName] = (string)stepContext.Result;
+
             return await stepContext.PromptAsync(_bodyPromptName,
                 new PromptOptions
                 {
@@ -69,7 +75,17 @@ namespace JK_Assistant
         /// </summary>
         private async Task<DialogTurnResult> ConfirmNoteStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await stepContext.NextAsync(null, cancellationToken);
+            stepContext.Values[_bodyFieldName] = (string)stepContext.Result;
+
+
+
+
+
+            return await stepContext.PromptAsync(nameof(ConfirmPrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text(_shouldSavePrompt),
+                }, cancellationToken);
         }
 
         /// <summary>

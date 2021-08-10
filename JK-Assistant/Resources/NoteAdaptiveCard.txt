@@ -1,0 +1,42 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.2",
+    "body": [
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "<TitleValue>",
+                            "wrap": true,
+                            "size": "Large"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "url": "https://img-premium.flaticon.com/png/512/686/686112.png?token=exp=1628597627~hmac=e12c3ebdb11e95330205c58a38074bc8",
+                            "size": "Small"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "TextBlock",
+            "text": "<BodyValue>",
+            "wrap": true,
+            "size": "Medium"
+        }
+    ],
+    "minHeight": "206px"
+}

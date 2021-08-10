@@ -22,12 +22,13 @@ namespace JK_Assistant
         private const string _titleFieldName = "TitleValue";
         private const string _bodyFieldName = "BodyValue";
 
-        protected readonly UserState UserState;
-
+        //Accessor for AllUserNotes used to save the data
+        private readonly IStatePropertyAccessor<AllUserNotes> _allUserNotesAccessor;
         public AddNoteDialog(UserState userState)
         {
             InitialDialogId = nameof(MainDialog);
-            UserState = userState;
+            _allUserNotesAccessor = userState.CreateProperty<AllUserNotes>(nameof(AllUserNotes));
+
 
             AddDialog(new TextPrompt(_titlePromptName, TitlePromptValidatorAsync));
             AddDialog(new TextPrompt(_bodyPromptName));
@@ -77,6 +78,7 @@ namespace JK_Assistant
         {
             stepContext.Values[_bodyFieldName] = (string)stepContext.Result;
 
+            //Display Adaptive Card with note content
             var NoteCardAttachment = MessageFactory.Attachment(Functions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
                 (string)stepContext.Values[_bodyFieldName]));
 

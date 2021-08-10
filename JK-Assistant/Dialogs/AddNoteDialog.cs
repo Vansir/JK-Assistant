@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace JK_Assistant
 {
+    /// <summary>
+    /// Dialog class for adding new note
+    /// </summary>
     public class AddNoteDialog : ComponentDialog
     {
     }

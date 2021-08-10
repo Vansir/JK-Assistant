@@ -58,8 +58,8 @@ namespace JK_Assistant
         {
             switch (((FoundChoice)stepContext.Result).Value)
             {
-                //case _choiceAddNoteText:
-                //    return await stepContext.BeginDialogAsync(nameof(AddNoteDialog), null, cancellationToken);
+                case _choiceAddNoteText:
+                    return await stepContext.BeginDialogAsync(nameof(AddNoteDialog), null, cancellationToken);
 
                 //case _choiceReadNotesText:
                 //    break;

@@ -1,12 +1,129 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JK_Assistant
 {
+    /// <summary>
+    /// Dialog class for adding new note
+    /// </summary>
     public class AddNoteDialog : ComponentDialog
     {
+        private const string _noteTitlePrompt = "Please enter your note title";
+        private const string _noteTitleInvalid = "Note title must have between 3 and 20 characters. Please enter correct value";
+        private const string _noteBodyPrompt = "Please enter your note";
+        private const string _shouldSavePrompt = "Would you like to save this note?";
+        private const string _noteNotSavedMessage = "Your note was discarded";
+        private const string _noteSavedMessage = "Note successfully saved";
+        private const string _titlePromptName = "TitlePrompt";
+        private const string _bodyPromptName = "BodyPrompt";
+        private const string _titleFieldName = "TitleValue";
+        private const string _bodyFieldName = "BodyValue";
+
+        //Accessor for AllUserNotes used to save the data
+        private readonly IStatePropertyAccessor<AllUserNotes> _allUserNotesAccessor;
+        public AddNoteDialog(UserState userState)
+        {
+            InitialDialogId = nameof(MainDialog);
+            _allUserNotesAccessor = userState.CreateProperty<AllUserNotes>(nameof(AllUserNotes));
+
+
+            AddDialog(new TextPrompt(_titlePromptName, TitlePromptValidatorAsync));
+            AddDialog(new TextPrompt(_bodyPromptName));
+            AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
+
+            //main waterfall dialog
+            AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
+            {
+                GetNoteTitleStepAsync,
+                GetNoteBodyStepAsync,
+                ConfirmNoteStepAsync,
+                EndDialogStepAsync,
+            }));
+        }
+
+        /// <summary>
+        /// Step with prompt for note title
+        /// </summary>
+        private async Task<DialogTurnResult> GetNoteTitleStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            return await stepContext.PromptAsync(_titlePromptName,
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text(_noteTitlePrompt),
+                    RetryPrompt = MessageFactory.Text(_noteTitleInvalid),
+                }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Step to store title and prompt for note body
+        /// </summary>
+        private async Task<DialogTurnResult> GetNoteBodyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values[_titleFieldName] = (string)stepContext.Result;
+
+            return await stepContext.PromptAsync(_bodyPromptName,
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text(_noteBodyPrompt),
+                }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Step to store body and display confirmation
+        /// </summary>
+        private async Task<DialogTurnResult> ConfirmNoteStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            stepContext.Values[_bodyFieldName] = (string)stepContext.Result;
+
+            //Display Adaptive Card with note content
+            var NoteCardAttachment = MessageFactory.Attachment(Functions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
+                (string)stepContext.Values[_bodyFieldName]));
+
+            await stepContext.Context.SendActivityAsync(NoteCardAttachment);
+
+            //Prompt if displayed adaptive card containing the note should be saved
+            return await stepContext.PromptAsync(nameof(ConfirmPrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text(_shouldSavePrompt),
+                }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Step to save note and end dialog
+        /// </summary>
+        private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            //If user wants to save the note, store note values in UserState. Else just infor that message was not saved.
+            if ((bool)stepContext.Result)
+            {
+                //Create new UserNote object and get All notes object from User State
+                var CurrentNote = new UserNote((string)stepContext.Values[_titleFieldName], (string)stepContext.Values[_bodyFieldName]);
+                var AllUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new AllUserNotes(), cancellationToken);
+
+                //Add note to all notes and save it in User State
+                AllUserNotes.UserNotesList.Add(CurrentNote);
+                await _allUserNotesAccessor.SetAsync(stepContext.Context, AllUserNotes, cancellationToken);
+            }
+            else
+            {
+                await stepContext.Context.SendActivityAsync(_noteNotSavedMessage);
+            }
+            return await stepContext.EndDialogAsync(null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Validator which is limiting the length of title between 3 and 20 chars
+        /// </summary>
+        private static Task<bool> TitlePromptValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(promptContext.Recognized.Value.Length >= 3 &&
+                promptContext.Recognized.Value.Length <= 20);
+        }
     }
 }

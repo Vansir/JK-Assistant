@@ -29,6 +29,8 @@ namespace JK_Assistant
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new AddNoteDialog(UserState));
+            AddDialog(new ReadNotesDialog(UserState));
+
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
             {
@@ -61,8 +63,8 @@ namespace JK_Assistant
                 case _choiceAddNoteText:
                     return await stepContext.BeginDialogAsync(nameof(AddNoteDialog), null, cancellationToken);
 
-                //case _choiceReadNotesText:
-                //    break;
+                case _choiceReadNotesText:
+                    return await stepContext.BeginDialogAsync(nameof(ReadNotesDialog), null, cancellationToken);
 
                 //case _choiceSearchWebText:
                 //    break;

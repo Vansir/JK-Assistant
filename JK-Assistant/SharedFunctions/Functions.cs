@@ -1,5 +1,7 @@
-﻿using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 
 namespace JK_Assistant
@@ -25,6 +27,19 @@ namespace JK_Assistant
             };
 
             return noteCardAttachment;
+        }
+
+        public static IMessageActivity GenerateNotesCarousel(List<UserNote> userNotesList)
+        {
+            IMessageActivity notesCarousel = MessageFactory.Attachment(new List<Attachment>());
+            notesCarousel.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            foreach (var note in userNotesList)
+            {
+                notesCarousel.Attachments.Add(CreateNoteCardAttachment(note.NoteTitle, note.NoteBody));
+            }
+
+            return notesCarousel;
         }
     }
 }

@@ -81,10 +81,10 @@ namespace JK_Assistant
             stepContext.Values[_bodyFieldName] = (string)stepContext.Result;
 
             //Display Adaptive Card with note content
-            var NoteCardAttachment = MessageFactory.Attachment(Functions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
+            var noteCardAttachment = MessageFactory.Attachment(Functions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
                 (string)stepContext.Values[_bodyFieldName]));
 
-            await stepContext.Context.SendActivityAsync(NoteCardAttachment);
+            await stepContext.Context.SendActivityAsync(noteCardAttachment);
 
             //Prompt if displayed adaptive card containing the note should be saved
             return await stepContext.PromptAsync(nameof(ConfirmPrompt),
@@ -103,12 +103,12 @@ namespace JK_Assistant
             if ((bool)stepContext.Result)
             {
                 //Create new UserNote object and get All notes object from User State
-                var CurrentNote = new UserNote((string)stepContext.Values[_titleFieldName], (string)stepContext.Values[_bodyFieldName]);
-                var AllUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new AllUserNotes(), cancellationToken);
+                var currentNote = new UserNote((string)stepContext.Values[_titleFieldName], (string)stepContext.Values[_bodyFieldName]);
+                var allUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new AllUserNotes(), cancellationToken);
 
                 //Add note to all notes and save it in User State
-                AllUserNotes.UserNotesList.Add(CurrentNote);
-                await _allUserNotesAccessor.SetAsync(stepContext.Context, AllUserNotes, cancellationToken);
+                allUserNotes.UserNotesList.Add(currentNote);
+                await _allUserNotesAccessor.SetAsync(stepContext.Context, allUserNotes, cancellationToken);
             }
             else
             {

@@ -17,6 +17,8 @@ namespace JK_Assistant
         private const string _noteTitleInvalid = "Note title must have between 3 and 20 characters. Please enter correct value";
         private const string _noteBodyPrompt = "Please enter your note";
         private const string _shouldSavePrompt = "Would you like to save this note?";
+        private const string _noteNotSavedMessage = "Your note was discarded";
+        private const string _noteSavedMessage = "Note successfully saved";
         private const string _titlePromptName = "TitlePrompt";
         private const string _bodyPromptName = "BodyPrompt";
         private const string _titleFieldName = "TitleValue";
@@ -84,6 +86,7 @@ namespace JK_Assistant
 
             await stepContext.Context.SendActivityAsync(NoteCardAttachment);
 
+            //Prompt if displayed adaptive card containing the note should be saved
             return await stepContext.PromptAsync(nameof(ConfirmPrompt),
                 new PromptOptions
                 {
@@ -96,6 +99,21 @@ namespace JK_Assistant
         /// </summary>
         private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            //If user wants to save the note, store note values in UserState. Else just infor that message was not saved.
+            if ((bool)stepContext.Result)
+            {
+                //Create new UserNote object and get All notes object from User State
+                var CurrentNote = new UserNote((string)stepContext.Values[_titleFieldName], (string)stepContext.Values[_bodyFieldName]);
+                var AllUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new AllUserNotes(), cancellationToken);
+
+                //Add note to all notes and save it in User State
+                AllUserNotes.UserNotesList.Add(CurrentNote);
+                await _allUserNotesAccessor.SetAsync(stepContext.Context, AllUserNotes, cancellationToken);
+            }
+            else
+            {
+                await stepContext.Context.SendActivityAsync(_noteNotSavedMessage);
+            }
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 

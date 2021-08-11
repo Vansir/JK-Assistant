@@ -11,7 +11,13 @@ namespace JK_Assistant
     /// </summary>
     public class UserNote
     {
-        public string NoteTitle { get; set; }
-        public string NoteBody { get; set; }
+        public string NoteTitle { get; }
+        public string NoteBody { get; }
+
+        public UserNote(string noteTitle, string noteBody)
+        {
+            NoteTitle = noteTitle;
+            NoteBody = noteBody;
+        }
     }
 }

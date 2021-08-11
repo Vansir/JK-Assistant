@@ -14,6 +14,8 @@ namespace JK_Assistant
 {
     public class JKAssistantBot<T> : ActivityHandler where T : Dialog
     {
+        private const string _welcomeMessage = "Hello and welcome!";
+
         protected readonly Dialog Dialog;
         protected readonly BotState ConversationState;
         protected readonly BotState UserState;
@@ -37,12 +39,11 @@ namespace JK_Assistant
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            var welcomeText = "Hello and welcome!";
             foreach (var member in membersAdded)
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text(_welcomeMessage), cancellationToken);
 
                     //Run main dialog
                     await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

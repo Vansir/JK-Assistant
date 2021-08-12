@@ -64,7 +64,7 @@ namespace JK_Assistant.Properties {
         ///   Looks up a localized string similar to {
         ///    &quot;type&quot;: &quot;AdaptiveCard&quot;,
         ///    &quot;$schema&quot;: &quot;http://adaptivecards.io/schemas/adaptive-card.json&quot;,
-        ///    &quot;version&quot;: &quot;1.2&quot;,
+        ///    &quot;version&quot;: &quot;1.3&quot;,
         ///    &quot;body&quot;: [
         ///        {
         ///            &quot;type&quot;: &quot;ColumnSet&quot;,
@@ -75,12 +75,63 @@ namespace JK_Assistant.Properties {
         ///                    &quot;items&quot;: [
         ///                        {
         ///                            &quot;type&quot;: &quot;TextBlock&quot;,
-        ///                            &quot;text&quot;: &quot;&lt;TitleValue&gt;&quot;,
-        ///                            &quot;wrap&quot;: true [rest of string was truncated]&quot;;.
+        ///                            &quot;text&quot;: &quot;&quot;,
+        ///                            &quot;wrap&quot;: true,
+        ///          [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string NoteAdaptiveCard {
             get {
                 return ResourceManager.GetString("NoteAdaptiveCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;type&quot;: &quot;AdaptiveCard&quot;,
+        ///    &quot;$schema&quot;: &quot;http://adaptivecards.io/schemas/adaptive-card.json&quot;,
+        ///    &quot;version&quot;: &quot;1.2&quot;,
+        ///    &quot;body&quot;: [
+        ///        {
+        ///            &quot;type&quot;: &quot;ActionSet&quot;,
+        ///            &quot;actions&quot;: [
+        ///                {
+        ///                    &quot;type&quot;: &quot;Action.OpenUrl&quot;,
+        ///                    &quot;title&quot;: &quot;Open Search Results&quot;
+        ///                }
+        ///            ]
+        ///        }
+        ///    ]
+        ///}.
+        /// </summary>
+        internal static string SearchResultCard {
+            get {
+                return ResourceManager.GetString("SearchResultCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;$schema&quot;: &quot;http://adaptivecards.io/schemas/adaptive-card.json&quot;,
+        ///    &quot;type&quot;: &quot;AdaptiveCard&quot;,
+        ///    &quot;version&quot;: &quot;1.2&quot;,
+        ///    &quot;body&quot;: [
+        ///        {
+        ///            &quot;type&quot;: &quot;TextBlock&quot;,
+        ///            &quot;size&quot;: &quot;Medium&quot;,
+        ///            &quot;weight&quot;: &quot;Bolder&quot;,
+        ///            &quot;text&quot;: &quot;GOOGLE&quot;,
+        ///            &quot;horizontalAlignment&quot;: &quot;Center&quot;,
+        ///            &quot;wrap&quot;: true
+        ///        },
+        ///        {
+        ///            &quot;type&quot;: &quot;Input.Text&quot;,
+        ///            &quot;style&quot;: &quot;text&quot;,
+        ///            &quot;id&quot;: &quot;SearchValue&quot;,
+        ///            &quot;placeholder&quot;: &quot;Enter valu [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string WebSearchCard {
+            get {
+                return ResourceManager.GetString("WebSearchCard", resourceCulture);
             }
         }
     }

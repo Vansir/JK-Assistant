@@ -7,10 +7,12 @@
 
   <ItemGroup>
     <None Remove="Resources\NoteAdaptiveCard.txt" />
+    <None Remove="Resources\WebSearchCard.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Resources\NoteAdaptiveCard.txt" />
+    <Content Include="Resources\WebSearchCard.txt" />
   </ItemGroup>
 
   <ItemGroup>

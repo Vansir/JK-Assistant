@@ -44,5 +44,41 @@ namespace JK_Assistant
 
             return notesCarousel;
         }
+
+        public static Attachment CreateWebSearchCardAttachment()
+        {
+            //Combine path for cross platform support
+            var paths = new[] { ".", "Resources", "WebSearchCard.txt" };
+            var webSearchCard = File.ReadAllText(Path.Combine(paths));
+            dynamic cardJsonObject = JsonConvert.DeserializeObject(webSearchCard);
+
+            //Create the attachment
+            var webSearchCardAttachment = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = cardJsonObject,
+            };
+
+            return webSearchCardAttachment;
+        }
+
+        public static Attachment CreateSearchResultCardAttachment(string searchUrl)
+        {
+            //Combine path for cross platform support
+            var paths = new[] { ".", "Resources", "SearchResultCard.txt" };
+            var searchResultCard = File.ReadAllText(Path.Combine(paths));
+            dynamic cardJsonObject = JsonConvert.DeserializeObject(searchResultCard);
+
+            cardJsonObject["body"][0]["actions"][0]["url"] = searchUrl;
+
+            //Create the attachment
+            var searchResultCardAttachment = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = cardJsonObject,
+            };
+
+            return searchResultCardAttachment;
+        }
     }
 }

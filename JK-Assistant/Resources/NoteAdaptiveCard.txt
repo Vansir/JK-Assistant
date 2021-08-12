@@ -12,7 +12,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "<TitleValue>",
+                            "text": "",
                             "wrap": true,
                             "size": "Large"
                         }
@@ -24,7 +24,7 @@
                     "items": [
                         {
                             "type": "Image",
-                            "url": "https://adaptivecards.io/content/cats/1.png",
+                            "url": "https://i.imgur.com/emlIsEY.png",
                             "size": "Small"
                         }
                     ]
@@ -33,7 +33,7 @@
         },
         {
             "type": "TextBlock",
-            "text": "<BodyValue>",
+            "text": "",
             "wrap": true,
             "size": "Medium"
         }

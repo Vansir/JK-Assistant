@@ -28,7 +28,7 @@ namespace JK_Assistant
         private readonly IStatePropertyAccessor<AllUserNotes> _allUserNotesAccessor;
         public AddNoteDialog(UserState userState)
         {
-            InitialDialogId = nameof(MainDialog);
+            InitialDialogId = nameof(AddNoteDialog);
             _allUserNotesAccessor = userState.CreateProperty<AllUserNotes>(nameof(AllUserNotes));
 
 
@@ -37,7 +37,7 @@ namespace JK_Assistant
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
 
             //main waterfall dialog
-            AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
+            AddDialog(new WaterfallDialog(nameof(AddNoteDialog), new WaterfallStep[]
             {
                 GetNoteTitleStepAsync,
                 GetNoteBodyStepAsync,

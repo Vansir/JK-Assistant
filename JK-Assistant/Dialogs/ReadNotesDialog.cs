@@ -17,11 +17,11 @@ namespace JK_Assistant
         private readonly IStatePropertyAccessor<AllUserNotes> _allUserNotesAccessor;
         public ReadNotesDialog(UserState userState)
         {
-            InitialDialogId = nameof(MainDialog);
+            InitialDialogId = nameof(ReadNotesDialog);
             _allUserNotesAccessor = userState.CreateProperty<AllUserNotes>(nameof(AllUserNotes));
 
             //main waterfall dialog
-            AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
+            AddDialog(new WaterfallDialog(nameof(ReadNotesDialog), new WaterfallStep[]
             {
                 DisplayNotesStepAsync,
             }));

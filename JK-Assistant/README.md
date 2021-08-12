@@ -1,8 +1,8 @@
 ﻿# JK_Assistant
 
-Bot Framework v4 echo bot sample.
+Simple Assistant allowing to store notes and search the web.
 
-This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a simple bot that accepts input from the user and echoes it back.
+This bot has been created using [Bot Framework](https://dev.botframework.com).
 
 ## Prerequisites
 

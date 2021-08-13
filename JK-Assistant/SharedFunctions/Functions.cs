@@ -8,9 +8,6 @@ namespace JK_Assistant
 {
     public class Functions
     {
-        /// <summary>
-        /// This function generates Adaptive card to display the note
-        /// </summary>
         public static Attachment CreateNoteCardAttachment(string noteTitle, string noteBody)
         {
             //Combine path for cross platform support
@@ -39,7 +36,7 @@ namespace JK_Assistant
 
             foreach (var note in userNotesList)
             {
-                notesCarousel.Attachments.Add(CreateNoteCardAttachment(note.NoteTitle, note.NoteBody));
+                notesCarousel.Attachments.Add(CreateNoteCardAttachment(note.Title, note.Body));
             }
 
             return notesCarousel;

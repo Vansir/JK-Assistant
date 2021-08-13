@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,12 +12,12 @@ namespace JK_Assistant
         private const string _noNotesMessage= "No notes were added yet";
 
         //Accessor for AllUserNotes used to save the data
-        private readonly IStatePropertyAccessor<AllUserNotes> _allUserNotesAccessor;
+        private readonly IStatePropertyAccessor<UserNotes> _allUserNotesAccessor;
         public ReadNotesDialog(UserState userState)
         {
             InitialDialogId = nameof(ReadNotesDialog);
-            _allUserNotesAccessor = userState.CreateProperty<AllUserNotes>(nameof(AllUserNotes));
-
+            _allUserNotesAccessor = userState.CreateProperty<UserNotes>(nameof(UserNotes));
+            
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(ReadNotesDialog), new WaterfallStep[]
             {
@@ -32,12 +30,12 @@ namespace JK_Assistant
         /// </summary>
         private async Task<DialogTurnResult> DisplayNotesStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var AllUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new AllUserNotes(), cancellationToken);
+            var AllUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new UserNotes(), cancellationToken);
 
             //If there are notes, display them, else send message with information.
-            if (AllUserNotes.UserNotesList.Any())
+            if (AllUserNotes.Notes.Any())
             {
-                IMessageActivity notesCarousel = Functions.GenerateNotesCarousel(AllUserNotes.UserNotesList);
+                IMessageActivity notesCarousel = Functions.GenerateNotesCarousel(AllUserNotes.Notes);
                 await stepContext.Context.SendActivityAsync(notesCarousel, cancellationToken);
             }
             else

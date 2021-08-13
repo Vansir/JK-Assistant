@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -13,10 +12,14 @@ namespace JK_Assistant
     {
 
         private const string _choicePromptText = "How can I help you?";
-        private const string _choiceAddNoteText = "Add note";
-        private const string _choiceReadNotesText = "Read notes";
-        private const string _choiceSearchWebText = "Search the web";
         private const string _choiceInvalidText = "Choice is not valid";
+
+        private readonly Dictionary<string, string> _choices = new()
+        {
+            {"Add note", nameof(AddNoteDialog) },
+            {"Read notes", nameof(ReadNotesDialog) },
+            {"Search the web", nameof(SearchWebDialog) },
+        };
 
         protected readonly ConversationState ConversationState;
         protected readonly UserState UserState;
@@ -50,7 +53,7 @@ namespace JK_Assistant
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text(_choicePromptText),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { _choiceAddNoteText, _choiceReadNotesText, _choiceSearchWebText }),
+                    Choices = ChoiceFactory.ToChoices(_choices.Keys.ToList()),
                 }, cancellationToken);
         }
 
@@ -59,21 +62,14 @@ namespace JK_Assistant
         /// </summary>
         private async Task<DialogTurnResult> DialogSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            switch (((FoundChoice)stepContext.Result).Value)
+            var userChoice = ((FoundChoice)stepContext.Result).Value;
+
+            if (_choices.ContainsKey(userChoice))
             {
-                case _choiceAddNoteText:
-                    return await stepContext.BeginDialogAsync(nameof(AddNoteDialog), null, cancellationToken);
-
-                case _choiceReadNotesText:
-                    return await stepContext.BeginDialogAsync(nameof(ReadNotesDialog), null, cancellationToken);
-
-                case _choiceSearchWebText:
-                    return await stepContext.BeginDialogAsync(nameof(SearchWebDialog), null, cancellationToken);
-
-                default:
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text(_choiceInvalidText), cancellationToken);
-                    return await stepContext.NextAsync(null, cancellationToken);
+                return await stepContext.BeginDialogAsync(_choices[userChoice], null, cancellationToken);
             }
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(_choiceInvalidText), cancellationToken);
+            return await stepContext.NextAsync(null, cancellationToken);
         }
 
         /// <summary>

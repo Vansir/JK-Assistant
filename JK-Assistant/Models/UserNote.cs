@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace JK_Assistant
+﻿namespace JK_Assistant
 {
-
-    /// <summary>
-    /// Class to store single user note
-    /// </summary>
     public class UserNote
     {
-        public string NoteTitle { get; }
-        public string NoteBody { get; }
+        public string Title { get; }
+        public string Body { get; }
 
-        public UserNote(string noteTitle, string noteBody)
+        public UserNote(string title, string body)
         {
-            NoteTitle = noteTitle;
-            NoteBody = noteBody;
+            Title = title;
+            Body = body;
         }
     }
 }

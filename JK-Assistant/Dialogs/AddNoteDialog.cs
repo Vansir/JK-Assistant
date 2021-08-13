@@ -1,8 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,13 +21,11 @@ namespace JK_Assistant
         private const string _titleFieldName = "TitleValue";
         private const string _bodyFieldName = "BodyValue";
 
-        //Accessor for AllUserNotes used to save the data
-        private readonly IStatePropertyAccessor<AllUserNotes> _allUserNotesAccessor;
+        private readonly IStatePropertyAccessor<UserNotes> _userNotesAccessor;
         public AddNoteDialog(UserState userState)
         {
             InitialDialogId = nameof(AddNoteDialog);
-            _allUserNotesAccessor = userState.CreateProperty<AllUserNotes>(nameof(AllUserNotes));
-
+            _userNotesAccessor = userState.CreateProperty<UserNotes>(nameof(UserNotes));
 
             AddDialog(new TextPrompt(_titlePromptName, TitlePromptValidatorAsync));
             AddDialog(new TextPrompt(_bodyPromptName));
@@ -42,7 +37,7 @@ namespace JK_Assistant
                 GetNoteTitleStepAsync,
                 GetNoteBodyStepAsync,
                 ConfirmNoteStepAsync,
-                EndDialogStepAsync,
+                StoreNoteStepAsync,
             }));
         }
 
@@ -97,18 +92,18 @@ namespace JK_Assistant
         /// <summary>
         /// Step to save note and end dialog
         /// </summary>
-        private async Task<DialogTurnResult> EndDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> StoreNoteStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //If user wants to save the note, store note values in UserState. Else just infor that message was not saved.
-            if ((bool)stepContext.Result)
+            var userWantsToStoreNote = (bool)stepContext.Result;
+            if (userWantsToStoreNote)
             {
                 //Create new UserNote object and get All notes object from User State
                 var currentNote = new UserNote((string)stepContext.Values[_titleFieldName], (string)stepContext.Values[_bodyFieldName]);
-                var allUserNotes = await _allUserNotesAccessor.GetAsync(stepContext.Context, () => new AllUserNotes(), cancellationToken);
+                var allUserNotes = await _userNotesAccessor.GetAsync(stepContext.Context, () => new UserNotes(), cancellationToken);
 
                 //Add note to all notes and save it in User State
-                allUserNotes.UserNotesList.Add(currentNote);
-                await _allUserNotesAccessor.SetAsync(stepContext.Context, allUserNotes, cancellationToken);
+                allUserNotes.Notes.Add(currentNote);
+                await _userNotesAccessor.SetAsync(stepContext.Context, allUserNotes, cancellationToken);
             }
             else
             {

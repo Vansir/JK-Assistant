@@ -34,8 +34,8 @@ namespace JK_Assistant
                 {
                     case "help":
                         HeroCard helpHeroCard = Functions.GenerateHelpCard();
-                        var helpMessage = MessageFactory.Attachment(helpHeroCard.ToAttachment());
-                        await innerDc.Context.SendActivityAsync(helpMessage, cancellationToken);
+                        var helpCard = MessageFactory.Attachment(helpHeroCard.ToAttachment());
+                        await innerDc.Context.SendActivityAsync(helpCard, cancellationToken);
                         await innerDc.RepromptDialogAsync(cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 

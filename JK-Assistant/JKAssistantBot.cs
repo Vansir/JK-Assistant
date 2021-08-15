@@ -9,17 +9,17 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using System.IO;
 
 namespace JK_Assistant
 {
     public class JKAssistantBot<T> : ActivityHandler where T : Dialog
     {
-        private const string _welcomeMessage = "Hello and welcome!";
-        private const string _helpMessage = "Type 'help' to display help message";
-
         protected readonly Dialog Dialog;
         protected readonly BotState ConversationState;
         protected readonly BotState UserState;
+        private Templates _templates;
 
         //Constructor for JKAssistantBot class
         public JKAssistantBot(ConversationState conversationState, UserState userState, T dialog)
@@ -27,6 +27,10 @@ namespace JK_Assistant
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
+
+            string[] paths = { ".", "Resources", "LanguageGeneration.lg" };
+            string fullPath = Path.Combine(paths);
+            _templates = Templates.ParseFile(fullPath);
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -44,8 +48,8 @@ namespace JK_Assistant
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(_welcomeMessage), cancellationToken);
-                    await turnContext.SendActivityAsync(MessageFactory.Text(_helpMessage), cancellationToken);
+                    await turnContext.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("Welcome")));
+                    await turnContext.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("HelpTip")));
 
                     //Run main dialog
                     await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -77,5 +78,18 @@ namespace JK_Assistant
 
             return searchResultCardAttachment;
         }
+        public static HeroCard GenerateHelpCard()
+        {
+            var newLine = Environment.NewLine;
+
+            return new HeroCard
+            {
+                Title = $"JK Assistant HELP",
+
+                Text = $"Bot supports following commands:{newLine}" +
+                $"- Type 'help' to display help card{newLine}" +
+                $"- Type 'exit' to end the conversation",
+        };
     }
+}
 }

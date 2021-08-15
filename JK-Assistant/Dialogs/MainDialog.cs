@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace JK_Assistant
 {
-    public class MainDialog : ComponentDialog
+    public class MainDialog : InterruptionDialog
     {
 
         private const string _choicePromptText = "How can I help you?";
@@ -25,6 +25,7 @@ namespace JK_Assistant
         protected readonly UserState UserState;
 
         public MainDialog (ConversationState conversationState, UserState userState)
+            : base(nameof(MainDialog))
         {
             InitialDialogId = nameof(MainDialog);
             ConversationState = conversationState;

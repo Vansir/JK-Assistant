@@ -15,6 +15,7 @@ namespace JK_Assistant
     public class JKAssistantBot<T> : ActivityHandler where T : Dialog
     {
         private const string _welcomeMessage = "Hello and welcome!";
+        private const string _helpMessage = "Type 'help' to display help message";
 
         protected readonly Dialog Dialog;
         protected readonly BotState ConversationState;
@@ -44,6 +45,7 @@ namespace JK_Assistant
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
                     await turnContext.SendActivityAsync(MessageFactory.Text(_welcomeMessage), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text(_helpMessage), cancellationToken);
 
                     //Run main dialog
                     await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

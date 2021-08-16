@@ -5,14 +5,14 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using System.Threading;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using System.IO;
 
 namespace JK_Assistant
 {
     public class MainDialog : InterruptionDialog
     {
-
-        private const string _choicePromptText = "How can I help you?";
-        private const string _choiceInvalidText = "Choice is not valid";
+        private Templates _templates;
 
         private readonly Dictionary<string, string> _choices = new()
         {
@@ -30,6 +30,10 @@ namespace JK_Assistant
             InitialDialogId = nameof(MainDialog);
             ConversationState = conversationState;
             UserState = userState;
+
+            string[] paths = { ".", "Resources", "LanguageGeneration.lg" };
+            string fullPath = Path.Combine(paths);
+            _templates = Templates.ParseFile(fullPath);
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new AddNoteDialog(UserState));
@@ -53,7 +57,8 @@ namespace JK_Assistant
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text(_choicePromptText),
+                    Prompt = ActivityFactory.FromObject(_templates.Evaluate("MenuMessage")),
+                    RetryPrompt = ActivityFactory.FromObject(_templates.Evaluate("InvalidChoice")),
                     Choices = ChoiceFactory.ToChoices(_choices.Keys.ToList()),
                 }, cancellationToken);
         }
@@ -69,12 +74,12 @@ namespace JK_Assistant
             {
                 return await stepContext.BeginDialogAsync(_choices[userChoice], null, cancellationToken);
             }
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(_choiceInvalidText), cancellationToken);
+            await stepContext.Context.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("ChoiceNotImplemented")), cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
         /// <summary>
-        /// Step where bot starts the dialog from the begginning
+        /// Step where bot starts the dialog from the begginning.
         /// </summary>
         private async Task<DialogTurnResult> ReplaceDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {

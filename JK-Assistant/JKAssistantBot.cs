@@ -49,7 +49,6 @@ namespace JK_Assistant
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
                     await turnContext.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("Welcome")));
-                    await turnContext.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("HelpTip")));
 
                     //Run main dialog
                     await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

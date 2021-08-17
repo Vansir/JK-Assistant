@@ -61,6 +61,16 @@ namespace JK_Assistant.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LanguageGeneration {
+            get {
+                object obj = ResourceManager.GetObject("LanguageGeneration", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;type&quot;: &quot;AdaptiveCard&quot;,
         ///    &quot;$schema&quot;: &quot;http://adaptivecards.io/schemas/adaptive-card.json&quot;,
@@ -96,7 +106,8 @@ namespace JK_Assistant.Properties {
         ///            &quot;actions&quot;: [
         ///                {
         ///                    &quot;type&quot;: &quot;Action.OpenUrl&quot;,
-        ///                    &quot;title&quot;: &quot;Open Search Results&quot;
+        ///                    &quot;title&quot;: &quot;Open Search Results&quot;,
+        ///                    &quot;url&quot;: &quot;google.com&quot;
         ///                }
         ///            ]
         ///        }

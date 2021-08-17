@@ -1,0 +1,20 @@
+# Welcome
+- Hello and welcome! ${HelpTip()}
+- Welcome to the JK_Assistant! ${HelpTip()}
+
+# HelpTip
+- Type 'help' to display help message
+- If you don't know what to do, type 'help'
+
+# MenuMessage
+- How can I help you?
+- What can I do for you?
+
+# InvalidChoice
+- Choice is not valid
+- That's not a valid choice
+- Invalid choice. Try selecting one of the options displayed
+
+# ChoiceNotImplemented
+- Choice is not implemented. Try something else.
+- This functionality is not working yet. Please try something else.

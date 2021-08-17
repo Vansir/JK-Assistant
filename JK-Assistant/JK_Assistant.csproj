@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\LanguageGeneration.lg" />
     <None Remove="Resources\NoteAdaptiveCard.txt" />
     <None Remove="Resources\WebSearchCard.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\LanguageGeneration.lg" />
     <Content Include="Resources\NoteAdaptiveCard.txt" />
     <Content Include="Resources\WebSearchCard.txt" />
   </ItemGroup>
@@ -20,6 +22,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.14.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.14.1" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Version="4.14.1" />
   </ItemGroup>
 
     <ItemGroup>

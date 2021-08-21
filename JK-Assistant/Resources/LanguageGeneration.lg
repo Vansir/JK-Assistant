@@ -16,5 +16,10 @@
 - Invalid choice. Try selecting one of the options displayed
 
 # ChoiceNotImplemented
-- Choice is not implemented. Try something else.
-- This functionality is not working yet. Please try something else.
+- Choice is not implemented. Try something else
+- This functionality is not working yet. Please try something else
+
+# InputSearch
+- What would you like to search for?
+- Tell me, what would you like to search for?
+- Please enter searched phrase

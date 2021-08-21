@@ -8,7 +8,7 @@
             "actions": [
                 {
                     "type": "Action.OpenUrl",
-                    "title": "Open Search Results",
+                    "title": "Click to open your search results",
                     "url": "google.com"
                 }
             ]

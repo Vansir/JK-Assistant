@@ -23,8 +23,9 @@ namespace JK_Assistant
 
         private static readonly HttpClient client = new HttpClient();
         private Templates _templates;
-        public SearchWebDialog()
+        public SearchWebDialog(IConfiguration config)
         {
+            _config = config;
             InitialDialogId = nameof(SearchWebDialog);
 
             string[] paths = { ".", "Resources", "LanguageGeneration.lg" };
@@ -69,32 +70,21 @@ namespace JK_Assistant
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
-        private static Task<bool> WebSearchCardValidatorAsync(PromptValidatorContext<string> promptValidatorContext, CancellationToken cancellationToken)
+        private async Task<SearchResultRoot> GetSearchResults(string searchValue, int numberOfResults)
         {
-            return Task.FromResult(true);
-        }
-
-        private static async Task<SearchResultRoot> GetSearchResults(string searchValue)
-        {
-            var builder = new UriBuilder(_googleCustomSearchUri);
-            builder.Port = -1;
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query["key"] = apiKey;
-            query["cx"] = searchEngineID;
-            query["num"] = searchResultsNumber;
+            var uriBuilder = new UriBuilder(_googleCustomSearchUri);
+            //Use default port
+            uriBuilder.Port = -1;
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["key"] = _config.GetValue<string>("GoogleSearchApiKey");
+            query["cx"] = _config.GetValue<string>("GoogleSearchApiKey");
+            query["num"] = numberOfResults.ToString();
             query["q"] = searchValue;
 
-            builder.Query = query.ToString();
+            uriBuilder.Query = query.ToString();
 
-            var check = builder.ToString();
-
-            var streamTask = client.GetStreamAsync(builder.ToString());
-            var searchResults = await JsonSerializer.DeserializeAsync<SearchResultRoot>(await streamTask);
-
-            foreach (var item in searchResults.Items)
-            {
-                Console.WriteLine(item.title);
-            }
+            var streamTask = client.GetStreamAsync(uriBuilder.ToString());
+            return await JsonSerializer.DeserializeAsync<SearchResultRoot>(await streamTask);
         }
     }
 }

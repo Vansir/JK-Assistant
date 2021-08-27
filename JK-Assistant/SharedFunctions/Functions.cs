@@ -4,11 +4,15 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using AdaptiveCards.Templating;
 
 namespace JK_Assistant
 {
     public class Functions
     {
+        private const string _googleSearchUrl = "https://www.google.com/search?q=";
+        private const string _searchGoogleMsg = "Display more results";
+
         public static Attachment CreateNoteCardAttachment(string noteTitle, string noteBody)
         {
             //Combine path for cross platform support
@@ -43,37 +47,32 @@ namespace JK_Assistant
             return notesCarousel;
         }
 
-        public static Attachment CreateWebSearchCardAttachment()
+        public static Attachment CreateSearchResultCardAttachment(string searchValue, SearchResultRoot results)
         {
-            //Combine path for cross platform support
-            var paths = new[] { ".", "Resources", "WebSearchCard.txt" };
-            var webSearchCard = File.ReadAllText(Path.Combine(paths));
-            dynamic cardJsonObject = JsonConvert.DeserializeObject(webSearchCard);
+            string searchUrl = _googleSearchUrl + searchValue;
 
-            //Create the attachment
-            var webSearchCardAttachment = new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = cardJsonObject,
-            };
-
-            return webSearchCardAttachment;
-        }
-
-        public static Attachment CreateSearchResultCardAttachment(string searchUrl)
-        {
             //Combine path for cross platform support
             var paths = new[] { ".", "Resources", "SearchResultCard.txt" };
-            var searchResultCard = File.ReadAllText(Path.Combine(paths));
-            dynamic cardJsonObject = JsonConvert.DeserializeObject(searchResultCard);
+            var template = new AdaptiveCardTemplate(File.ReadAllText(Path.Combine(paths)));
+            var data = results;
+            if (data.Items == null) data.Items = new List<SearchResultItem>();
+            var googleSearch = new SearchResultItem();
 
-            cardJsonObject["body"][0]["actions"][0]["url"] = searchUrl;
+            //Adding option to open google search webpage
+            googleSearch.title = _searchGoogleMsg;
+            googleSearch.link = searchUrl;
+            googleSearch.displayLink = "";
+            googleSearch.snippet = "";
+
+            data.Items.Add(googleSearch);
+
+            string cardJsonObject = template.Expand(data);
 
             //Create the attachment
             var searchResultCardAttachment = new Attachment()
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = cardJsonObject,
+                Content = JsonConvert.DeserializeObject(cardJsonObject),
             };
 
             return searchResultCardAttachment;
@@ -89,7 +88,7 @@ namespace JK_Assistant
                 Text = $"Bot supports following commands:{newLine}" +
                 $"- Type 'help' to display help card{newLine}" +
                 $"- Type 'exit' to end the conversation",
-        };
+            };
+        }
     }
-}
 }

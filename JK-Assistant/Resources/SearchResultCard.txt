@@ -4,12 +4,51 @@
     "version": "1.2",
     "body": [
         {
-            "type": "ActionSet",
-            "actions": [
+            "type": "Container",
+            "items": [
                 {
-                    "type": "Action.OpenUrl",
-                    "title": "Open Search Results",
-                    "url": "google.com"
+                    "type": "TextBlock",
+                    "text": "Search Results",
+                    "wrap": true,
+                    "size": "large",
+                    "weight": "bolder",
+                    "color": "accent"
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "Container",
+                    "$data": "${items}",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "[${DisplayLink}](${Link})",
+                            "wrap": true,
+                            "size": "small",
+                            "color": "dark"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "[${Title}](${Link})",
+                            "wrap": true,
+                            "size": "medium",
+                            "color": "dark",
+                            "spacing": "none"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "${Snippet}",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": " ",
+                            "wrap": true
+                        }
+                    ]
                 }
             ]
         }

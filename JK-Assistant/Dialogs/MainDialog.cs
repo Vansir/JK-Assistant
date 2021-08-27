@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using System.Threading;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace JK_Assistant
 {
@@ -23,10 +24,12 @@ namespace JK_Assistant
 
         protected readonly ConversationState ConversationState;
         protected readonly UserState UserState;
+        private readonly IConfiguration _config;
 
-        public MainDialog (ConversationState conversationState, UserState userState)
+        public MainDialog (ConversationState conversationState, UserState userState, IConfiguration config)
             : base(nameof(MainDialog))
         {
+            _config = config;
             InitialDialogId = nameof(MainDialog);
             ConversationState = conversationState;
             UserState = userState;
@@ -38,7 +41,7 @@ namespace JK_Assistant
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new AddNoteDialog(UserState));
             AddDialog(new ReadNotesDialog(UserState));
-            AddDialog(new SearchWebDialog());
+            AddDialog(new SearchWebDialog(_config));
 
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]

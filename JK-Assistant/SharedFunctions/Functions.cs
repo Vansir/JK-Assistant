@@ -11,6 +11,8 @@ namespace JK_Assistant
     public class Functions
     {
         private const string _googleSearchUrl = "https://www.google.com/search?q=";
+        private const string _searchGoogleMsg = "Display more results";
+
         public static Attachment CreateNoteCardAttachment(string noteTitle, string noteBody)
         {
             //Combine path for cross platform support
@@ -53,6 +55,16 @@ namespace JK_Assistant
             var paths = new[] { ".", "Resources", "SearchResultCard.txt" };
             var template = new AdaptiveCardTemplate(File.ReadAllText(Path.Combine(paths)));
             var data = results;
+            if (data.Items == null) data.Items = new List<SearchResultItem>();
+            var googleSearch = new SearchResultItem();
+
+            //Adding option to open google search webpage
+            googleSearch.title = _searchGoogleMsg;
+            googleSearch.link = searchUrl;
+            googleSearch.displayLink = "";
+            googleSearch.snippet = "";
+
+            data.Items.Add(googleSearch);
 
             string cardJsonObject = template.Expand(data);
 

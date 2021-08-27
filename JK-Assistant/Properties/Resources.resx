@@ -127,7 +127,4 @@
   <data name="SearchResultCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SearchResultCard.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="WebSearchCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\WebSearchCard.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
 </root>

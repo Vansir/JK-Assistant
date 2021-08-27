@@ -9,13 +9,13 @@
   <ItemGroup>
     <None Remove="Resources\LanguageGeneration.lg" />
     <None Remove="Resources\NoteAdaptiveCard.txt" />
-    <None Remove="Resources\WebSearchCard.txt" />
+    <None Remove="Resources\SearchResultCard.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Resources\LanguageGeneration.lg" />
     <Content Include="Resources\NoteAdaptiveCard.txt" />
-    <Content Include="Resources\WebSearchCard.txt" />
+    <Content Include="Resources\SearchResultCard.txt" />
   </ItemGroup>
 
   <ItemGroup>

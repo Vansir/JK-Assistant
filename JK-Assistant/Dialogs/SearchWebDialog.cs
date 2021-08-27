@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +16,6 @@ namespace JK_Assistant
     {
         private const string _webSearchMessage = "WebSearchCard";
         private const string _googleCustomSearchUri = "https://www.googleapis.com/customsearch/v1";
-        private const string _googleSearchUrl = "https://www.google.com/search?q=";
         private readonly IConfiguration _config;
 
         private static readonly HttpClient client = new HttpClient();
@@ -44,10 +41,6 @@ namespace JK_Assistant
 
         private async Task<DialogTurnResult> SearchInputStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //Create Adaptive Card with web search
-            Attachment webSearchCardAttachment = Functions.CreateWebSearchCardAttachment();
-
-            //Return prompt with adaptive card
             return await stepContext.PromptAsync(nameof(TextPrompt),
                 new PromptOptions
                 {
@@ -59,11 +52,9 @@ namespace JK_Assistant
         {
             //Store value to search for
             string searchValue = (string)stepContext.Result;
+            var resultsObject = await GetSearchResults(searchValue, 3);
 
-            //Build url to use
-            string searchUrl = _googleSearchUrl + searchValue;
-
-            var searchResultCard = MessageFactory.Attachment(Functions.CreateSearchResultCardAttachment(searchUrl));
+            var searchResultCard = MessageFactory.Attachment(Functions.CreateSearchResultCardAttachment(searchValue, resultsObject));
 
             await stepContext.Context.SendActivityAsync(searchResultCard);
         
@@ -77,7 +68,7 @@ namespace JK_Assistant
             uriBuilder.Port = -1;
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["key"] = _config.GetValue<string>("GoogleSearchApiKey");
-            query["cx"] = _config.GetValue<string>("GoogleSearchApiKey");
+            query["cx"] = _config.GetValue<string>("GoogleSearchEngineID");
             query["num"] = numberOfResults.ToString();
             query["q"] = searchValue;
 

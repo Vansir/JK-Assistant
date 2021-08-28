@@ -54,7 +54,7 @@ namespace JK_Assistant
             string searchValue = (string)stepContext.Result;
             var resultsObject = await GetSearchResults(searchValue, 3);
 
-            var searchResultCard = MessageFactory.Attachment(Functions.CreateSearchResultCardAttachment(searchValue, resultsObject));
+            var searchResultCard = MessageFactory.Attachment(CardsCreationFunctions.CreateSearchResultCardAttachment(searchValue, resultsObject));
 
             await stepContext.Context.SendActivityAsync(searchResultCard);
         

@@ -7,5 +7,10 @@ namespace JK_Assistant
     {
         [JsonPropertyName("items")]
         public List<SearchResultItem> Items { get; set; }
+
+        public SearchResultRoot()
+        {
+            Items = new List<SearchResultItem>();
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace JK_Assistant
             //If there are notes, display them, else send message with information.
             if (AllUserNotes.Notes.Any())
             {
-                IMessageActivity notesCarousel = Functions.GenerateNotesCarousel(AllUserNotes.Notes);
+                IMessageActivity notesCarousel = CardsCreationFunctions.GenerateNotesCarousel(AllUserNotes.Notes);
                 await stepContext.Context.SendActivityAsync(notesCarousel, cancellationToken);
             }
             else

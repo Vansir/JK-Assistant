@@ -67,7 +67,7 @@
                         {
                             "type": "Action.OpenUrl",
                             "title": "Open Google Search",
-                            "url": "${googleSearchUrl}"
+                            "url": "${googleSearchLink}"
                         }
                     ]
                 }

@@ -54,7 +54,9 @@ namespace JK_Assistant
             //Combine path for cross platform support
             var paths = new[] { ".", "Resources", "SearchResultCard.txt" };
             var template = new AdaptiveCardTemplate(File.ReadAllText(Path.Combine(paths)));
-            var data = results;
+            var data = new SearchResultData();
+            data.Items = results.Items;
+            data.googleSearchLink = searchUrl;
 
             string cardJsonObject = template.Expand(data);
 

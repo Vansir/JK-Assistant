@@ -76,7 +76,7 @@ namespace JK_Assistant
             stepContext.Values[_bodyFieldName] = (string)stepContext.Result;
 
             //Display Adaptive Card with note content
-            var noteCardAttachment = MessageFactory.Attachment(Functions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
+            var noteCardAttachment = MessageFactory.Attachment(CardsCreationFunctions.CreateNoteCardAttachment((string)stepContext.Values[_titleFieldName],
                 (string)stepContext.Values[_bodyFieldName]));
 
             await stepContext.Context.SendActivityAsync(noteCardAttachment);

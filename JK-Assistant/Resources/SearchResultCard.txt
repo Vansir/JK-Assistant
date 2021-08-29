@@ -41,12 +41,33 @@
                         {
                             "type": "TextBlock",
                             "text": "${Snippet}",
+                            "wrap": true,
+                            "spacing": "small"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": " ",
                             "wrap": true
                         },
                         {
                             "type": "TextBlock",
                             "text": " ",
                             "wrap": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ActionSet",
+                    "actions": [
+                        {
+                            "type": "Action.OpenUrl",
+                            "title": "Open Google Search",
+                            "url": "${googleSearchLink}"
                         }
                     ]
                 }

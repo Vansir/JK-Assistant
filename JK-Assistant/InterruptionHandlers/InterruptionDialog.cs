@@ -33,7 +33,7 @@ namespace JK_Assistant
                 switch (text)
                 {
                     case "help":
-                        HeroCard helpHeroCard = Functions.GenerateHelpCard();
+                        HeroCard helpHeroCard = CardsCreationFunctions.GenerateHelpCard();
                         var helpCard = MessageFactory.Attachment(helpHeroCard.ToAttachment());
                         await innerDc.Context.SendActivityAsync(helpCard, cancellationToken);
                         await innerDc.RepromptDialogAsync(cancellationToken);

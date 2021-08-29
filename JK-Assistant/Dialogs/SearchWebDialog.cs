@@ -4,10 +4,6 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Web;
-using System.Text.Json;
-using System;
 using Microsoft.Extensions.Configuration;
 
 namespace JK_Assistant

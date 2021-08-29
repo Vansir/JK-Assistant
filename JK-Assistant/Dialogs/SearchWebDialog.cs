@@ -15,10 +15,7 @@ namespace JK_Assistant
     public class SearchWebDialog : ComponentDialog
     {
         private const string _webSearchMessage = "WebSearchCard";
-        private const string _googleCustomSearchUri = "https://www.googleapis.com/customsearch/v1";
         private readonly IConfiguration _config;
-
-        private static readonly HttpClient client = new HttpClient();
         private Templates _templates;
         public SearchWebDialog(IConfiguration config)
         {
@@ -51,31 +48,16 @@ namespace JK_Assistant
         private async Task<DialogTurnResult> DisplayWebpage(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             //Store value to search for
-            string searchValue = (string)stepContext.Result;
-            var resultsObject = await GetSearchResults(searchValue, 3);
+            var searchValue = (string)stepContext.Result;
+            string googleSearchKey = _config.GetValue<string>("GoogleSearchApiKey");
+            string googleSearchEngine = _config.GetValue<string>("GoogleSearchEngineID");
+            var resultsObject = await Functions.SearchResultsWithAPI(searchValue, 3, googleSearchKey, googleSearchEngine);
 
             var searchResultCard = MessageFactory.Attachment(CardsCreationFunctions.CreateSearchResultCardAttachment(searchValue, resultsObject));
 
             await stepContext.Context.SendActivityAsync(searchResultCard);
         
             return await stepContext.EndDialogAsync(null, cancellationToken);
-        }
-
-        private async Task<SearchResultRoot> GetSearchResults(string searchValue, int numberOfResults)
-        {
-            var uriBuilder = new UriBuilder(_googleCustomSearchUri);
-            //Use default port
-            uriBuilder.Port = -1;
-            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-            query["key"] = _config.GetValue<string>("GoogleSearchApiKey");
-            query["cx"] = _config.GetValue<string>("GoogleSearchEngineID");
-            query["num"] = numberOfResults.ToString();
-            query["q"] = searchValue;
-
-            uriBuilder.Query = query.ToString();
-
-            var streamTask = client.GetStreamAsync(uriBuilder.ToString());
-            return await JsonSerializer.DeserializeAsync<SearchResultRoot>(await streamTask);
         }
     }
 }

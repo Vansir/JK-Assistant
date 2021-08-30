@@ -32,6 +32,7 @@ namespace JK_Assistant
 
                 switch (text)
                 {
+                    case "?":
                     case "help":
                         HeroCard helpHeroCard = CardsCreationFunctions.GenerateHelpCard();
                         var helpCard = MessageFactory.Attachment(helpHeroCard.ToAttachment());

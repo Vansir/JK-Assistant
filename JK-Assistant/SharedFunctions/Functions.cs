@@ -1,84 +1,38 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace JK_Assistant
 {
     public class Functions
     {
-        /// <summary>
-        /// This function generates Adaptive card to display the note
-        /// </summary>
-        public static Attachment CreateNoteCardAttachment(string noteTitle, string noteBody)
+        private const string _googleCustomSearchUri = "https://www.googleapis.com/customsearch/v1";
+        private readonly IConfiguration _config;
+
+        public Functions(IConfiguration config)
         {
-            //Combine path for cross platform support
-            var paths = new[] { ".", "Resources", "NoteAdaptiveCard.txt" };
-            var noteCardJson = File.ReadAllText(Path.Combine(paths));
-            dynamic cardJsonObject = JsonConvert.DeserializeObject(noteCardJson);
-
-            //Update the values of title and note inside of adaptive card
-            cardJsonObject["body"][0]["columns"][0]["items"][0]["text"] = noteTitle;
-            cardJsonObject["body"][1]["text"] = noteBody;
-
-            //Create the attachment
-            var noteCardAttachment = new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = cardJsonObject,
-            };
-
-            return noteCardAttachment;
+            _config = config;
         }
 
-        public static IMessageActivity GenerateNotesCarousel(List<UserNote> userNotesList)
+        public static async Task<SearchResultRoot> SearchResultsWithAPI(string searchValue, int numberOfResults, string googleSearchKey, string googleSearchEngine)
         {
-            IMessageActivity notesCarousel = MessageFactory.Attachment(new List<Attachment>());
-            notesCarousel.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            var uriBuilder = new UriBuilder(_googleCustomSearchUri);
+            //Use default port
+            uriBuilder.Port = -1;
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["key"] = googleSearchKey;
+            query["cx"] = googleSearchEngine;
+            query["num"] = numberOfResults.ToString();
+            query["q"] = searchValue;
 
-            foreach (var note in userNotesList)
-            {
-                notesCarousel.Attachments.Add(CreateNoteCardAttachment(note.NoteTitle, note.NoteBody));
-            }
+            uriBuilder.Query = query.ToString();
 
-            return notesCarousel;
-        }
-
-        public static Attachment CreateWebSearchCardAttachment()
-        {
-            //Combine path for cross platform support
-            var paths = new[] { ".", "Resources", "WebSearchCard.txt" };
-            var webSearchCard = File.ReadAllText(Path.Combine(paths));
-            dynamic cardJsonObject = JsonConvert.DeserializeObject(webSearchCard);
-
-            //Create the attachment
-            var webSearchCardAttachment = new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = cardJsonObject,
-            };
-
-            return webSearchCardAttachment;
-        }
-
-        public static Attachment CreateSearchResultCardAttachment(string searchUrl)
-        {
-            //Combine path for cross platform support
-            var paths = new[] { ".", "Resources", "SearchResultCard.txt" };
-            var searchResultCard = File.ReadAllText(Path.Combine(paths));
-            dynamic cardJsonObject = JsonConvert.DeserializeObject(searchResultCard);
-
-            cardJsonObject["body"][0]["actions"][0]["url"] = searchUrl;
-
-            //Create the attachment
-            var searchResultCardAttachment = new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = cardJsonObject,
-            };
-
-            return searchResultCardAttachment;
+            var client = new HttpClient();
+            var streamTask = client.GetStreamAsync(uriBuilder.ToString());
+            return await JsonSerializer.DeserializeAsync<SearchResultRoot>(await streamTask);
         }
     }
 }

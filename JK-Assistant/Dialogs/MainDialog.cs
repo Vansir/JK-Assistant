@@ -1,36 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using System.Threading;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace JK_Assistant
 {
-    public class MainDialog : ComponentDialog
+    public class MainDialog : BaseInterruptionDialog
     {
+        private Templates _templates;
 
-        private const string _choicePromptText = "How can I help you?";
-        private const string _choiceAddNoteText = "Add note";
-        private const string _choiceReadNotesText = "Read notes";
-        private const string _choiceSearchWebText = "Search the web";
-        private const string _choiceInvalidText = "Choice is not valid";
+        private readonly Dictionary<string, string> _choices = new()
+        {
+            {"Add note", nameof(AddNoteDialog) },
+            {"Read notes", nameof(ReadNotesDialog) },
+            {"Search the web", nameof(SearchWebDialog) },
+        };
 
         protected readonly ConversationState ConversationState;
         protected readonly UserState UserState;
+        private readonly IConfiguration _config;
 
-        public MainDialog (ConversationState conversationState, UserState userState)
+        public MainDialog (ConversationState conversationState, UserState userState, IConfiguration config)
+            : base(nameof(MainDialog))
         {
+            _config = config;
             InitialDialogId = nameof(MainDialog);
             ConversationState = conversationState;
             UserState = userState;
 
+            string[] paths = { ".", "Resources", "LanguageGeneration.lg" };
+            string fullPath = Path.Combine(paths);
+            _templates = Templates.ParseFile(fullPath);
+
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new AddNoteDialog(UserState));
             AddDialog(new ReadNotesDialog(UserState));
-            AddDialog(new SearchWebDialog());
+            AddDialog(new SearchWebDialog(_config));
 
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(MainDialog), new WaterfallStep[]
@@ -49,8 +60,9 @@ namespace JK_Assistant
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text(_choicePromptText),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { _choiceAddNoteText, _choiceReadNotesText, _choiceSearchWebText }),
+                    Prompt = ActivityFactory.FromObject(_templates.Evaluate("MenuMessage")),
+                    RetryPrompt = ActivityFactory.FromObject(_templates.Evaluate("InvalidChoice")),
+                    Choices = ChoiceFactory.ToChoices(_choices.Keys.ToList()),
                 }, cancellationToken);
         }
 
@@ -59,25 +71,18 @@ namespace JK_Assistant
         /// </summary>
         private async Task<DialogTurnResult> DialogSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            switch (((FoundChoice)stepContext.Result).Value)
+            var userChoice = ((FoundChoice)stepContext.Result).Value;
+
+            if (_choices.ContainsKey(userChoice))
             {
-                case _choiceAddNoteText:
-                    return await stepContext.BeginDialogAsync(nameof(AddNoteDialog), null, cancellationToken);
-
-                case _choiceReadNotesText:
-                    return await stepContext.BeginDialogAsync(nameof(ReadNotesDialog), null, cancellationToken);
-
-                case _choiceSearchWebText:
-                    return await stepContext.BeginDialogAsync(nameof(SearchWebDialog), null, cancellationToken);
-
-                default:
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text(_choiceInvalidText), cancellationToken);
-                    return await stepContext.NextAsync(null, cancellationToken);
+                return await stepContext.BeginDialogAsync(_choices[userChoice], null, cancellationToken);
             }
+            await stepContext.Context.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("ChoiceNotImplemented")), cancellationToken);
+            return await stepContext.NextAsync(null, cancellationToken);
         }
 
         /// <summary>
-        /// Step where bot starts the dialog from the begginning
+        /// Step where bot starts the dialog from the begginning.
         /// </summary>
         private async Task<DialogTurnResult> ReplaceDialogStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {

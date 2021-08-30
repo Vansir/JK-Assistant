@@ -1,70 +1,58 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace JK_Assistant
 {
-    public class SearchWebDialog : ComponentDialog
+    public class SearchWebDialog : AdvancedInterruptionDialog
     {
-        private const string _webSearchCardPrompt = "WebSearchCard";
-        private const string _googleSearchUrlPrefix = "https://www.google.com/search?q=";
-        public SearchWebDialog()
+        private readonly IConfiguration _config;
+        private Templates _templates;
+        public SearchWebDialog(IConfiguration config) : base(nameof(SearchWebDialog))
         {
+            _config = config;
             InitialDialogId = nameof(SearchWebDialog);
 
-            AddDialog(new TextPrompt(_webSearchCardPrompt,WebSearchCardValidatorAsync));
+            string[] paths = { ".", "Resources", "LanguageGeneration.lg" };
+            string fullPath = Path.Combine(paths);
+            _templates = Templates.ParseFile(fullPath);
+
+            AddDialog(new TextPrompt(nameof(TextPrompt)));
 
             //main waterfall dialog
             AddDialog(new WaterfallDialog(nameof(SearchWebDialog), new WaterfallStep[]
             {
-                SearchCardStepAsync,
+                SearchInputStepAsync,
                 DisplayWebpage,
             }));
         }
 
-        private async Task<DialogTurnResult> SearchCardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> SearchInputStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //Create Adaptive Card with web search
-            Attachment webSearchCardAttachment = Functions.CreateWebSearchCardAttachment();
-
-            //Return prompt with adaptive card
-            return await stepContext.PromptAsync(_webSearchCardPrompt,
+            return await stepContext.PromptAsync(nameof(TextPrompt),
                 new PromptOptions
                 {
-                    Prompt = (Activity)MessageFactory.Attachment(webSearchCardAttachment),
+                    Prompt = ActivityFactory.FromObject(_templates.Evaluate("InputSearch")),
                 }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> DisplayWebpage(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //Get user choice.
-            JObject jObject = stepContext.Context.Activity.Value as JObject ?? null;
+            //Store value to search for
+            var searchValue = (string)stepContext.Result;
+            string googleSearchKey = _config.GetValue<string>("GoogleSearchApiKey");
+            string googleSearchEngine = _config.GetValue<string>("GoogleSearchEngineID");
+            var resultsObject = await Functions.SearchResultsWithAPI(searchValue, 3, googleSearchKey, googleSearchEngine);
 
-            if (!(jObject is null))
-            {
-                //Store value to search for
-                string searchValue = (string)jObject["SearchValue"];
+            var searchResultCard = MessageFactory.Attachment(CardsCreationFunctions.CreateSearchResultCardAttachment(searchValue, resultsObject));
 
-                //Build url to use
-                string searchUrl = _googleSearchUrlPrefix + searchValue;
-
-                var searchResultCard = MessageFactory.Attachment(Functions.CreateSearchResultCardAttachment(searchUrl));
-
-                await stepContext.Context.SendActivityAsync(searchResultCard);
-            }
-
+            await stepContext.Context.SendActivityAsync(searchResultCard);
+        
             return await stepContext.EndDialogAsync(null, cancellationToken);
-        }
-
-        private static Task<bool> WebSearchCardValidatorAsync(PromptValidatorContext<string> promptValidatorContext, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(true);
         }
     }
 }

@@ -3,22 +3,37 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <UserSecretsId>60de8795-f91c-4cab-91cd-43a3eb34913a</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="README.md" />
+    <None Remove="Resources\LanguageGeneration.lg" />
     <None Remove="Resources\NoteAdaptiveCard.txt" />
-    <None Remove="Resources\WebSearchCard.txt" />
+    <None Remove="Resources\SearchResultCard.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="README.md" />
+    <Content Include="Resources\LanguageGeneration.lg" />
     <Content Include="Resources\NoteAdaptiveCard.txt" />
-    <Content Include="Resources\WebSearchCard.txt" />
+    <Content Include="Resources\SearchResultCard.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AdaptiveCards.Templating" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.14.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.14.1" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Version="4.14.1" />
   </ItemGroup>
 
     <ItemGroup>

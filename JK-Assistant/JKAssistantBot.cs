@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.13.1
+// Generated with Bot Builder V4 SDK Template
 
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -9,16 +9,17 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using System.IO;
 
 namespace JK_Assistant
 {
     public class JKAssistantBot<T> : ActivityHandler where T : Dialog
     {
-        private const string _welcomeMessage = "Hello and welcome!";
-
         protected readonly Dialog Dialog;
         protected readonly BotState ConversationState;
         protected readonly BotState UserState;
+        private Templates _templates;
 
         //Constructor for JKAssistantBot class
         public JKAssistantBot(ConversationState conversationState, UserState userState, T dialog)
@@ -26,6 +27,10 @@ namespace JK_Assistant
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
+
+            string[] paths = { ".", "Resources", "LanguageGeneration.lg" };
+            string fullPath = Path.Combine(paths);
+            _templates = Templates.ParseFile(fullPath);
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -43,7 +48,7 @@ namespace JK_Assistant
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(_welcomeMessage), cancellationToken);
+                    await turnContext.SendActivityAsync(ActivityFactory.FromObject(_templates.Evaluate("Welcome")));
 
                     //Run main dialog
                     await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

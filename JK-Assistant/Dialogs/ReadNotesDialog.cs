@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace JK_Assistant
 {
-    public class ReadNotesDialog : ComponentDialog
+    public class ReadNotesDialog : AdvancedInterruptionDialog
     {
         private const string _noNotesMessage= "No notes were added yet";
 
         //Accessor for AllUserNotes used to save the data
         private readonly IStatePropertyAccessor<UserNotes> _allUserNotesAccessor;
-        public ReadNotesDialog(UserState userState)
+        public ReadNotesDialog(UserState userState) : base(nameof(ReadNotesDialog))
         {
             InitialDialogId = nameof(ReadNotesDialog);
             _allUserNotesAccessor = userState.CreateProperty<UserNotes>(nameof(UserNotes));

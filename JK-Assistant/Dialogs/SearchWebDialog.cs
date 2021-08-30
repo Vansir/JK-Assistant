@@ -8,12 +8,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace JK_Assistant
 {
-    public class SearchWebDialog : ComponentDialog
+    public class SearchWebDialog : AdvancedInterruptionDialog
     {
-        private const string _webSearchMessage = "WebSearchCard";
         private readonly IConfiguration _config;
         private Templates _templates;
-        public SearchWebDialog(IConfiguration config)
+        public SearchWebDialog(IConfiguration config) : base(nameof(SearchWebDialog))
         {
             _config = config;
             InitialDialogId = nameof(SearchWebDialog);

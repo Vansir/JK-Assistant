@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace JK_Assistant
 {
-    public class MainDialog : InterruptionDialog
+    public class MainDialog : BaseInterruptionDialog
     {
         private Templates _templates;
 

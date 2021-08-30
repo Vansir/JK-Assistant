@@ -8,7 +8,7 @@ namespace JK_Assistant
     /// <summary>
     /// Dialog class for adding new note
     /// </summary>
-    public class AddNoteDialog : ComponentDialog
+    public class AddNoteDialog : AdvancedInterruptionDialog
     {
         private const string _noteTitlePrompt = "Please enter your note title";
         private const string _noteTitleInvalid = "Note title must have between 3 and 20 characters. Please enter correct value";
@@ -22,7 +22,7 @@ namespace JK_Assistant
         private const string _bodyFieldName = "BodyValue";
 
         private readonly IStatePropertyAccessor<UserNotes> _userNotesAccessor;
-        public AddNoteDialog(UserState userState)
+        public AddNoteDialog(UserState userState) : base(nameof(AddNoteDialog))
         {
             InitialDialogId = nameof(AddNoteDialog);
             _userNotesAccessor = userState.CreateProperty<UserNotes>(nameof(UserNotes));

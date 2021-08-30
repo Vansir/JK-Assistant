@@ -1,14 +1,13 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace JK_Assistant
 {
-    public class InterruptionDialog : ComponentDialog
+    public class AdvancedInterruptionDialog : BaseInterruptionDialog
     {
-        public InterruptionDialog (string id)
+        public AdvancedInterruptionDialog(string id)
             : base(id)
         {
         }
@@ -32,15 +31,8 @@ namespace JK_Assistant
 
                 switch (text)
                 {
-                    case "help":
-                        HeroCard helpHeroCard = CardsCreationFunctions.GenerateHelpCard();
-                        var helpCard = MessageFactory.Attachment(helpHeroCard.ToAttachment());
-                        await innerDc.Context.SendActivityAsync(helpCard, cancellationToken);
-                        await innerDc.RepromptDialogAsync(cancellationToken);
-                        return new DialogTurnResult(DialogTurnStatus.Waiting);
-
-                    case "exit":
-                        await innerDc.Context.SendActivityAsync("Goodbye", cancellationToken: cancellationToken);
+                    case "menu":
+                    case "cancel":
                         return await innerDc.CancelAllDialogsAsync(cancellationToken);
                 }
             }

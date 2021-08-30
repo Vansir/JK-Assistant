@@ -78,7 +78,8 @@ namespace JK_Assistant
                 Title = $"JK Assistant HELP",
 
                 Text = $"Bot supports following commands:{newLine}" +
-                $"- Type 'help' to display help card{newLine}" +
+                $"- Type 'help' or '?' to display help card{newLine}" +
+                $"- Type 'menu' or 'cancel' to return to menu{newLine}" +
                 $"- Type 'exit' to end the conversation",
             };
         }
